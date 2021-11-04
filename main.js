@@ -1,36 +1,35 @@
-const suits = ["♥️", "♦️", "♠️", "♣️"];
-const values = [
-  "2",
-  "3",
-  "4",
-  "5",
-  "6",
-  "7",
-  "8",
-  "9",
-  "10",
-  "J",
-  "Q",
-  "K",
-  "A",
-];
-let deck;
-let playerDeck;
-let computerDeck;
-let centerDeck;
-let playerStack;
-let computerStack;
-let inRound = false;
+import Deck from "./deck.js";
+
+const CARD_VALUE_MAP = {
+  2: 2,
+  3: 3,
+  4: 4,
+  5: 5,
+  6: 6,
+  7: 7,
+  8: 8,
+  9: 9,
+  10: 10,
+  J: 11,
+  Q: 12,
+  K: 13,
+  A: 14,
+};
 
 const computerCardSlot = document.querySelector(".computer-card-slot");
 const playerCardSlot = document.querySelector(".player-card-slot");
-const centerCardSlot = document.querySelector(".center-card-slot");
 const computerDeckElement = document.querySelector(".computer-deck");
 const playerDeckElement = document.querySelector(".player-deck");
-const centerDeckElement = document.querySelector(".center-deck");
-computerCardSlot.appendChild(Deck.cards[0].getHTML());
+const text = document.querySelector(".text");
+
+let playerDeck, computerDeck, inRound, stop;
 
 document.addEventListener("click", () => {
+  if (stop) {
+    startGame();
+    return;
+  }
+
   if (inRound) {
     cleanBeforeRound();
   } else {
@@ -38,69 +37,26 @@ document.addEventListener("click", () => {
   }
 });
 
-class Deck {
-  constructor() {
-    this.cards = this.createDeck();
-  }
-  pop() {
-    return this.cards.shift();
-  }
-
-  push(Card) {
-    this.cards.push(card);
-  }
-  shuffle() {
-    for (let i = this.cards.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [this.cards[i], this.cards[j]] = [this.cards[j], this.cards[i]];
-    }
-  }
-  createDeck() {
-    let cards = [];
-    for (let i = 0; i < suits.length; i++) {
-      for (let j = 0; j < values.length; j++) {
-        cards.push({ suit: suits[i], value: values[j] });
-      }
-    }
-
-    return cards;
-  }
-}
-
-class Card {
-  constructor(suit, value) {
-    this.suit = suit;
-    this.value = value;
-  }
-
-  get color() {
-    return this.suit === "♣️" || this.suit === "♠️" ? "black" : "red";
-  }
-
-  getHTML() {
-    let cardDiv = document.createElement("div");
-    cardDiv.innerText = this.suit;
-    cardDiv.classList.add("card", this.color);
-    cardDiv.dataset.value = "${this.value} ${this.suit}";
-    return cardDiv;
-  }
-}
-
-function setUp() {
+startGame();
+function startGame() {
   const deck = new Deck();
-
   deck.shuffle();
 
-  let playerDeck = deck.cards.slice(0, 26);
-  let computerDeck = deck.cards.slice(26, deck.cards.length);
+  const deckMidpoint = Math.ceil(deck.numberOfCards / 2);
+  playerDeck = new Deck(deck.cards.slice(0, deckMidpoint));
+  computerDeck = new Deck(deck.cards.slice(deckMidpoint, deck.numberOfCards));
   inRound = false;
+  stop = false;
+
   cleanBeforeRound();
 }
+
 function cleanBeforeRound() {
-  computerCardSlot.innerHTML = " ";
-  centerCardSlot.innerHTML = " ";
-  playerCardSlot.innerHTML = " ";
   inRound = false;
+  computerCardSlot.innerHTML = "";
+  playerCardSlot.innerHTML = "";
+  text.innerText = "";
+
   updateDeckCount();
 }
 
@@ -110,41 +66,43 @@ function flipCards() {
   const playerCard = playerDeck.pop();
   const computerCard = computerDeck.pop();
 
-  playerCardSlot.appendChild(playerCard.getHtml());
-  computerCardSlot.appendChild(computerCard.getHtml());
+  playerCardSlot.appendChild(playerCard.getHTML());
+  computerCardSlot.appendChild(computerCard.getHTML());
 
   updateDeckCount();
+
+  if (isRoundWinner(playerCard, computerCard)) {
+    text.innerText = "Win";
+    playerDeck.push(playerCard);
+    playerDeck.push(computerCard);
+  } else if (isRoundWinner(computerCard, playerCard)) {
+    text.innerText = "Lose";
+    computerDeck.push(playerCard);
+    computerDeck.push(computerCard);
+  } else {
+    text.innerText = "Draw";
+    playerDeck.push(playerCard);
+    computerDeck.push(computerCard);
+  }
+
+  if (isGameOver(playerDeck)) {
+    text.innerText = "You Lose!!";
+    stop = true;
+  } else if (isGameOver(computerDeck)) {
+    text.innerText = "You Win!!";
+    stop = true;
+  }
 }
 
 function updateDeckCount() {
-  computerDeckElement.innerText = computerDeck.deck.cars.length;
-  playerDeckElement.innerText = playerDeck.deck.cars.length;
-  centerDeckElement.innerText = centerDeck.deck.cars.length;
+  computerDeckElement.innerText = computerDeck.numberOfCards;
+  playerDeckElement.innerText = playerDeck.numberOfCards;
 }
 
-function initial() {
-return computerCard
-}
-function startGame() {
-    while ()
+function isRoundWinner(cardOne, cardTwo) {
+  return CARD_VALUE_MAP[cardOne.value] > CARD_VALUE_MAP[cardTwo.value];
 }
 
-function gameOver() {
-if(playerDeck || computerDeck === 0) {
-    
-}
-}
-
-function chekWinner() {
-    gameOver()
-    if (playerStack > computerStack) {
-        return "Player won!!"
-
-    } else {
-        return "Player lost!!"
-    }
-}
-
-function goToCenter() {
-    while(playerCard)
+function isGameOver(deck) {
+  return deck.numberOfCards === 0;
 }

@@ -3,28 +3,25 @@
 *::before {
   box-sizing: border-box;
 }
-.header {
-  border: 1px;
-  font-size: 100px;
-}
 
 body {
-  background-image: url("images/Background table.jpeg");
-  background-color: #cccccc;
-  background-size: cover;
+  background-image: url(./images/background\ table\ 2.jpeg);
+  /* background-repeat: no-repeat; */
   margin: 0;
   display: grid;
   grid-template-columns: repeat(2, 4rem);
   grid-template-rows: 7rem 2rem 7rem;
-  gap: 0.5rem;
+  gap: 12rem;
   cursor: pointer;
   justify-content: center;
   padding-top: 1rem;
 }
 
 .deck {
-  height: 100%;
-  width: 100%;
+  background-image: url(./images/Background\ cards.jpeg);
+  background-size: 100px;
+  height: 150%;
+  width: 150%;
   border: 1px solid black;
   display: flex;
   justify-content: center;
@@ -36,18 +33,15 @@ body {
 }
 
 .computer-deck {
-  background-color: rgb(128, 0, 0);
+  background-color: green;
 }
 
 .player-deck {
   background-color: blue;
 }
 
-.center-deck {
-  background-color: green;
-}
-
 .text {
+  font-size: 55px;
   grid-column: span 2;
   display: flex;
   justify-content: center;
@@ -55,9 +49,12 @@ body {
 }
 
 .card {
+  background-image: url(./images/Background\ frontcard.jpeg);
+  background-size: 125px;
+  background-position: center;
   position: relative;
-  height: 100%;
-  width: 100%;
+  height: 150%;
+  width: 150%;
   border: 1px solid black;
   border-radius: 0.5rem;
   display: flex;
