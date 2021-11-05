@@ -22,11 +22,20 @@ const computerDeckElement = document.querySelector(".computer-deck");
 const playerDeckElement = document.querySelector(".player-deck");
 const text = document.querySelector(".text");
 
-let playerDeck, computerDeck, inRound, stop;
+let playerDeck;
+let computerDeck;
+let inRound;
+let stop;
+let trashStack = [];
+let computerStack = [];
+let playerStack = [];
+let playerCard;
+let computerCard;
 
 document.addEventListener("click", () => {
   if (stop) {
     startGame();
+
     return;
   }
 
@@ -37,17 +46,14 @@ document.addEventListener("click", () => {
   }
 });
 
-startGame();
 function startGame() {
   const deck = new Deck();
   deck.shuffle();
-
   const deckMidpoint = Math.ceil(deck.numberOfCards / 2);
   playerDeck = new Deck(deck.cards.slice(0, deckMidpoint));
   computerDeck = new Deck(deck.cards.slice(deckMidpoint, deck.numberOfCards));
   inRound = false;
   stop = false;
-
   cleanBeforeRound();
 }
 
@@ -56,15 +62,16 @@ function cleanBeforeRound() {
   computerCardSlot.innerHTML = "";
   playerCardSlot.innerHTML = "";
   text.innerText = "";
-
+  isGameOver();
   updateDeckCount();
 }
 
 function flipCards() {
   inRound = true;
 
-  const playerCard = playerDeck.pop();
-  const computerCard = computerDeck.pop();
+  playerCard = playerDeck.pop();
+
+  computerCard = computerDeck.pop();
 
   playerCardSlot.appendChild(playerCard.getHTML());
   computerCardSlot.appendChild(computerCard.getHTML());
@@ -73,24 +80,16 @@ function flipCards() {
 
   if (isRoundWinner(playerCard, computerCard)) {
     text.innerText = "Win";
-    playerDeck.push(playerCard);
-    playerDeck.push(computerCard);
+    playerStack.push(playerCard);
+    playerStack.push(computerCard);
   } else if (isRoundWinner(computerCard, playerCard)) {
     text.innerText = "Lose";
-    computerDeck.push(playerCard);
-    computerDeck.push(computerCard);
+    computerStack.push(playerCard);
+    computerStack.push(computerCard);
   } else {
     text.innerText = "Draw";
-    playerDeck.push(playerCard);
-    computerDeck.push(computerCard);
-  }
-
-  if (isGameOver(playerDeck)) {
-    text.innerText = "You Lose!!";
-    stop = true;
-  } else if (isGameOver(computerDeck)) {
-    text.innerText = "You Win!!";
-    stop = true;
+    trashStack.push(playerCard);
+    trashStack.push(computerCard);
   }
 }
 
@@ -103,6 +102,28 @@ function isRoundWinner(cardOne, cardTwo) {
   return CARD_VALUE_MAP[cardOne.value] > CARD_VALUE_MAP[cardTwo.value];
 }
 
-function isGameOver(deck) {
-  return deck.numberOfCards === 0;
+function checkStackSize() {
+  if (playerStack > computerStack) {
+    alert("You Won!! Congratulations");
+  } else if (playerStack < computerStack) {
+    alert("Computer won! Goodluck next time");
+  } else {
+    alert("It's a tie!!");
+  }
+  text.style.visibility = "visible";
+  text.style.display = "block";
+  restarGame();
 }
+
+function isGameOver() {
+  if (playerDeck.cards.length === 0) {
+    checkStackSize();
+  }
+}
+
+function restarGame() {
+  alert("You want to play Again");
+  return startGame();
+}
+// execute game
+startGame();
