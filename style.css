@@ -24,10 +24,26 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 3rem;
+  font-size: 2rem;
   border-radius: 0.5rem;
   color: white;
   user-select: none;
+}
+
+.player-name {
+  position: absolute;
+  margin: 575px 675px;
+  font-size: 50px;
+  color: rgba(99, 3, 3, 0.863);
+  transform: rotate(45deg);
+}
+
+.computer-name {
+  position: absolute;
+  margin: 58px 660px;
+  font-size: 40px;
+  color: rgba(99, 3, 3, 0.863);
+  transform: rotate(45deg);
 }
 
 .text {
